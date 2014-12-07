@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% load filters %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+<style type="text/css">
+body {
+  background-color: {{ game_design.bgcolor }};
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid" role="main">
+  <div class="game-bg"></div>
+  <div class="jumbotron">
+    <h1>{{ game_name }}</h1>
+    <p>{{ description }}</p>
+    <p>Winner: {{ scores.0.player_name }}</p>
+  </div>
+
+  <div class="container">
+    <h1>Score Breakdown</h1>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          {% for r in roles_info %}
+          <th class="role-{{ r }}">{{ r|us_to_space|title }}</th>
+          {% endfor %}
+          {% for ss in subscores_info %}
+          <th class="ss-{{ ss }}">{{ ss|us_to_space|title }}</th>
+          {% endfor %}
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for score in scores %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ score.player_name }}</td>
+          {% for r in roles_info %}
+          <th class="role-{{ r }}">{{ score.roles|get:r }}</th>
+          {% endfor %}
+          {% for ss in subscores_info %}
+          <td class="ss-{{ ss }}">{{ score.subscores|get:ss }}</td>
+          {% endfor %}
+          <td>{{ score.score }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+var jumboHeight = $('.jumbotron').outerHeight();
+function parallax(){
+    var scrolled = $(window).scrollTop();
+    $('.bg').css('height', (jumboHeight-scrolled) + 'px');
+}
+
+$(window).scroll(function(e){
+    parallax();
+});
+
+$(function() {
+  $('.game-bg').css('background', "url('{% static game_design.banner %}') no-repeat center center");
+});
+</script>
+{% endblock %}
